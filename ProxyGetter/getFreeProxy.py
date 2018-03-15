@@ -13,6 +13,8 @@
 """
 import re
 import requests
+import time
+from ProxyGetter.nyloner_proxy import GetNylonerProxy
 
 try:
     from importlib import reload  # py3 实际不会实用，只是为了不显示语法错误
@@ -162,6 +164,20 @@ class GetFreeProxy(object):
             for tr in proxy_list[1:]:
                 yield ':'.join(tr.xpath('./td/text()')[0:2])
 
+    @staticmethod
+    def nylonerProxy():
+        proxies = []
+        page = 1
+        while True:
+            not_last_page = GetNylonerProxy.get_proxy_ip(proxies, page)
+            time.sleep(2)
+            page += 1
+            for proxy in proxies:
+                yield "%s:%s" % (proxy['ip'], proxy['port'])
+            proxies.clear()
+            if not not_last_page:
+                break
+
 
 if __name__ == '__main__':
     gg = GetFreeProxy()
@@ -182,5 +198,5 @@ if __name__ == '__main__':
 
     # for e in gg.freeProxySixth():
     #     print(e)
-    for e in gg.freeProxySeventh():
+    for e in gg.nylonerProxy():
         print(e)
